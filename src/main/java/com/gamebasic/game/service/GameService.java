@@ -1,9 +1,6 @@
 package com.gamebasic.game.service;
 
-import com.gamebasic.game.dto.CreateRequest;
-import com.gamebasic.game.dto.GameDetailResponse;
-import com.gamebasic.game.dto.GameSummaryResponse;
-import com.gamebasic.game.dto.ProgressRequest;
+import com.gamebasic.game.dto.*;
 import com.gamebasic.game.entity.Game;
 import com.gamebasic.game.repository.GameRepository;
 import com.gamebasic.runcard.dto.CardResponse;
@@ -134,6 +131,24 @@ public class GameService {
         );
      }
 
-    // TODO (Lv 8): 플레이어 이름 변경 — 변경 감지로 수정
-    // TODO (Lv 8): 게임 삭제
+     @Transactional
+    public void renameGame(Long gameId, RenameRequest request) {
+
+        Game game = gameRepository.findById(gameId).orElseThrow(
+                () -> new IllegalStateException("없는 게임입니다")
+        );
+        game.rename(request.getPlayerName());
+    }
+
+    @Transactional //이것좀 까먹지 말자
+    public void deleteGame(Long gameId) {
+
+        Game game = gameRepository.findById(gameId).orElseThrow(
+                () -> new IllegalStateException("없는 게임입니다")
+        );
+
+        runCardRepository.deleteAllByGame(game); //주인관계로 얽혀있기 때문에 Many를 먼저 제거해야함
+
+        gameRepository.deleteById(gameId);
+    }
 }

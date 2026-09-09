@@ -9,7 +9,9 @@ import java.util.List;
 public interface RunCardRepository extends JpaRepository<RunCard, Long> {
     List<RunCard> findAllByGameOrderByIdAsc(Game game);
 
-    void deleteAllByGame(Game game);
+    void deleteAllByGame(Game game); //게임을 지울때 이걸 사용
+
+    Game game(Game game);
 
     // TODO (Lv 11): @Query 작성
     // List<DeckCount> countByGames(List<Game> games);
