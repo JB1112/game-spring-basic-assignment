@@ -2,10 +2,7 @@ package com.gamebasic.game.dto;
 
 import com.gamebasic.game.entity.GamePhase;
 import com.gamebasic.game.entity.GameStatus;
-import com.gamebasic.runcard.dto.CardResponse;
 import lombok.Getter;
-
-import java.util.List;
 
 @Getter
 public class GameSummaryResponse {

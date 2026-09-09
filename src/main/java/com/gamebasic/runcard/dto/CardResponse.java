@@ -2,8 +2,6 @@ package com.gamebasic.runcard.dto;
 
 import lombok.Getter;
 
-import java.util.PrimitiveIterator;
-
 @Getter
 public class CardResponse {
 
