@@ -1,10 +1,7 @@
 package com.gamebasic.game.controller;
 
-import com.gamebasic.common.exception.GameFinishedException;
-import com.gamebasic.common.dto.ErrorResponse;
 import com.gamebasic.game.dto.*;
 import com.gamebasic.game.service.GameService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -58,19 +55,4 @@ public class GameController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(GameFinishedException.class)
-    public ResponseEntity<ErrorResponse> handlerGameFinishedException(
-            GameFinishedException e,
-            HttpServletRequest request
-    ) {
-        ErrorResponse response = new ErrorResponse(
-                HttpStatus.CONFLICT,
-                e.getMessage(),
-                request.getRequestURI()
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(response);
-    }
 }

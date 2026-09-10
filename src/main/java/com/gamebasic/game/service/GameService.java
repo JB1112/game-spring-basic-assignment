@@ -1,6 +1,7 @@
 package com.gamebasic.game.service;
 
 import com.gamebasic.common.exception.GameFinishedException;
+import com.gamebasic.common.exception.GameNotFoundException;
 import com.gamebasic.game.dto.*;
 import com.gamebasic.game.entity.Game;
 import com.gamebasic.game.repository.GameRepository;
@@ -9,10 +10,8 @@ import com.gamebasic.runcard.dto.RunCardRequest;
 import com.gamebasic.runcard.entity.RunCard;
 import com.gamebasic.runcard.repository.RunCardRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +53,7 @@ public class GameService {
 
     private Game findGame(Long gameId) {
         return gameRepository.findById(gameId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new GameNotFoundException(gameId));
     }
 
     @Transactional
@@ -113,7 +112,7 @@ public class GameService {
      @Transactional(readOnly = true)
      public GameDetailResponse getGame(Long gameId) {
         Game game = gameRepository.findById(gameId).orElseThrow(
-                () -> new IllegalStateException("없는 게임입니다")
+                () -> new GameNotFoundException(gameId)
         );
         List<RunCard> cards = runCardRepository.findAllByGameOrderByIdAsc(game); // 오름차순
 
@@ -141,7 +140,7 @@ public class GameService {
     public void renameGame(Long gameId, RenameRequest request) {
 
         Game game = gameRepository.findById(gameId).orElseThrow(
-                () -> new IllegalStateException("없는 게임입니다")
+                () -> new GameNotFoundException(gameId)
         );
         game.rename(request.getPlayerName());
     }
@@ -150,7 +149,7 @@ public class GameService {
     public void deleteGame(Long gameId) {
 
         Game game = gameRepository.findById(gameId).orElseThrow(
-                () -> new IllegalStateException("없는 게임입니다")
+                () -> new GameNotFoundException(gameId)
         );
 
         runCardRepository.deleteAllByGame(game); //주인관계로 얽혀있기 때문에 Many를 먼저 제거해야함

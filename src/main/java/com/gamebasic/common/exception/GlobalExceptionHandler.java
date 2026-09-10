@@ -46,4 +46,38 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ErrorResponse> respond(HttpStatus status, String message, HttpServletRequest request) {
         return ResponseEntity.status(status).body(new ErrorResponse(status, message, request.getRequestURI()));
     }
+
+    @ExceptionHandler(GameFinishedException.class)
+    public ResponseEntity<ErrorResponse> handlerGameFinishedException(
+            GameFinishedException e,
+            HttpServletRequest request
+    ) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.CONFLICT,
+                e.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(response);
+    }
+
+    @ExceptionHandler(GameNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlerGameNotFoundException(
+            GameNotFoundException e,
+            HttpServletRequest request
+    ) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.NOT_FOUND,
+                e.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(response);
+    }
+
+
 }
