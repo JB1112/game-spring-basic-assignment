@@ -1,5 +1,8 @@
 package com.gamebasic.runcard.dto;
 
+import lombok.Getter;
+
+@Getter
 public class DeckCount {
     private final Long gameId;
     private final Long cardCount;
@@ -8,7 +11,4 @@ public class DeckCount {
         this.gameId = gameId;
         this.cardCount = cardCount;
     }
-
-    public Long getGameId() { return gameId; }
-    public Long getCardCount() { return cardCount; }
 }
