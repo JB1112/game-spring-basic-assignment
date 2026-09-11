@@ -6,6 +6,7 @@ import com.gamebasic.game.dto.*;
 import com.gamebasic.game.entity.Game;
 import com.gamebasic.game.repository.GameRepository;
 import com.gamebasic.runcard.dto.CardResponse;
+import com.gamebasic.runcard.dto.DeckCount;
 import com.gamebasic.runcard.dto.RunCardRequest;
 import com.gamebasic.runcard.entity.RunCard;
 import com.gamebasic.runcard.repository.RunCardRepository;
@@ -15,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,13 +36,15 @@ public class GameService {
             deck.add(new CardResponse(card.getId(), card.getCardType(), card.getAcquiredFloor()));
         }
         return new GameDetailResponse(
-            game.getId(),
-            game.getPlayerName(),
-            game.getCurrentHp(),
-            game.getCurrentFloor(),
-            game.getPhase(),
-            game.getStatus(),
-            deck
+                game.getId(),
+                game.getPlayerName(),
+                game.getCurrentHp(),
+                game.getCurrentFloor(),
+                game.getPhase(),
+                game.getStatus(),
+                deck,
+                game.getCreatedAt(),
+                game.getUpdatedAt()
         );
     }
 
@@ -79,13 +84,15 @@ public class GameService {
             deck.add(new CardResponse(card.getId(), card.getCardType(), card.getAcquiredFloor()));
         }
         return new GameDetailResponse(
-            game.getId(),
-            game.getPlayerName(),
-            game.getCurrentHp(),
-            game.getCurrentFloor(),
-            game.getPhase(),
-            game.getStatus(),
-            deck
+                game.getId(),
+                game.getPlayerName(),
+                game.getCurrentHp(),
+                game.getCurrentFloor(),
+                game.getPhase(),
+                game.getStatus(),
+                deck,
+                game.getCreatedAt(),
+                game.getUpdatedAt()
         );
     }
 
@@ -93,15 +100,26 @@ public class GameService {
      @Transactional(readOnly = true)
      public List<GameSummaryResponse> getGames() {
         List<Game> games = gameRepository.findAll();
+
+        List<DeckCount> deckCounts = runCardRepository.countByGames(games); // 쿼리 1 (집계)
+         Map<Long, Long> deckSizeByGameId = deckCounts.stream()
+                 .collect(Collectors.toMap(DeckCount::getGameId, DeckCount::getCardCount));
+
         List<GameSummaryResponse> dtos = new ArrayList<>();
+
         for(Game game : games){
+            long deckSize = deckSizeByGameId.getOrDefault(game.getId(), 0L);
+
             GameSummaryResponse dto = new GameSummaryResponse(
                 game.getId(),
                 game.getPlayerName(),
                 game.getCurrentFloor(),
                 game.getCurrentHp(),
                 game.getPhase(),
-                game.getStatus()
+                game.getStatus(),
+                    (int) deckSize,
+                    game.getCreatedAt(),
+                    game.getUpdatedAt()
             );
             dtos.add(dto);
         }
@@ -132,7 +150,9 @@ public class GameService {
                 game.getCurrentFloor(),
                 game.getPhase(),
                 game.getStatus(),
-                dtos
+                dtos,
+                game.getCreatedAt(),
+                game.getUpdatedAt()
         );
      }
 
